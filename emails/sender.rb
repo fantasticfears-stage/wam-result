@@ -15,6 +15,7 @@
 # ruby sender.rb <dir_path> <sender_email>
 
 CONTENT_FILENAME = 'content.txt'.freeze
+TITLE_FILENAME = 'title.txt'.freeze
 RECIPIENTS_CSV_FILENAME = 'recipients.csv'.freeze
 SENDING_DOMAIN = 'mg.asianmonth.wiki'.freeze
 
@@ -26,21 +27,25 @@ unless Dir.exist?(dir_name)
   exit 0
 end
 
+title_filename = File.join(dir_name, TITLE_FILENAME)
 content_filename = File.join(dir_name, CONTENT_FILENAME)
 recipients_filename = File.join(dir_name, RECIPIENTS_CSV_FILENAME)
 
-unless [content_filename, recipients_filename].all? { |f| File.exist?(f) }
+unless [title_filename, content_filename, recipients_filename].all? { |f| File.exist?(f) }
   puts "Can't find files. They should be named as #{CONTENT_FILENAME} and #{RECIPIENTS_CSV_FILENAME}."
   exit 0
 end
 
+title = File.open(title_filename).read
 email_content = File.open(content_filename).read
 num_recipients = File.open(recipients_filename).readlines.count
 sender_email = ARGV[1]
 
 puts 'You are about to send this email:'
+puts '[title]' + '-' * 43
+puts title
 puts '[body]' + '-' * 44
-puts File.open(content_filename).read
+puts email_content
 puts '-' * 50
 puts "From: #{sender_email}"
 puts "To #{num_recipients} people, confirm? [y/N]"
@@ -56,7 +61,7 @@ CSV.foreach(recipients_filename) do |row|
 
   message_params = { from: sender_email,
                      to:  recipient,
-                     subject: 'The Ruby SDK is awesome!',
+                     subject: title,
                      text:    email_content }
 
   mg_client.send_message SENDING_DOMAIN, message_params
