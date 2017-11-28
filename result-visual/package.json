@@ -1,0 +1,21 @@
+{
+  "name": "wam-result-visual",
+  "version": "1.0.0",
+  "description": "Creating visual representation for WAM",
+  "main": "index.js",
+  "dependencies": {
+    "d3": "latest"
+  },
+  "devDependencies": {
+    "http-server": "latest"
+  },
+  "scripts": {
+    "start": "http-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "visualization"
+  ],
+  "author": "Erick Guan",
+  "license": "MIT"
+}
