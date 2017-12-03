@@ -1,0 +1,2 @@
+{   "plugins": ["lodash"],
+"presets": [ ["env", { "targets": { "uglify": false } }] ] }
