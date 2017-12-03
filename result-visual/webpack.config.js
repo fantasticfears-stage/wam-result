@@ -16,10 +16,20 @@ module.exports = {
       },
       test: /\.js$/,
       exclude: /node_modules/,
+    }, {
+      test: /\.csv$/,
+      use: [
+        {
+          loader: 'raw-loader',
+          options: {
+            name: 'public/data'
+          }
+        }
+      ]
     }]
   },
   plugins: [
-    new LodashModuleReplacementPlugin({ collections: true })
-    // new webpack.optimize.UglifyJsPlugin()
+    new LodashModuleReplacementPlugin({ collections: true }),
+    new webpack.optimize.UglifyJsPlugin()
   ]
 };

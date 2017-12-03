@@ -2,81 +2,27 @@ import * as d3 from 'd3';
 import { bb } from 'billboard.js';
 import _ from 'lodash';
 import { setTimeout } from 'timers';
+import meta from './public/data/meta.csv';
+import daily from './public/data/daily.csv';
+import weekly from './public/data/weekly.csv';
+import top10 from './public/data/10-top.csv';
 
 let loadDataFrom = function (filename, row, callback) {
-  return d3.csv(`data/${filename}`, row, callback);
+  let content;
+  if (filename === 'meta.csv') {
+    content = meta;
+  } else if (filename === 'daily.csv') {
+    content = daily;
+  } else if (filename === 'weekly.csv') {
+    content = weekly;
+  } else if (filename === '10-top.csv') {
+    content = top10;
+  }
+  return callback(d3.csvParse(content, row));
 };
 let buildUserPageUrl = function(prefix, username) {
   return `${prefix}/wiki/User:${username}`
 }
-loadDataFrom('meta.csv', (d) => {
-  return {
-    userCount: d.user_count,
-    articleCount: d.article_count,
-    editathonCode: d.editathon_code,
-    editathonDescription: d.editathon_description,
-    url: d.url
-  };
-}, (meta) => {
-  buildSelections(meta);
-  let sel = document.getElementById('campaign-choice');
-  sel.value = 'asian-month-2017-en';
-  meta = _.keyBy(meta, i => i.editathonCode);
-
-  loadDataFrom(
-    '10-top.csv',
-    (d) => {
-      return {
-        rank: +d.rank_number,
-        username: d.user,
-        'Submitted': +d.article_count,
-        code: d.code,
-        description: d.description,
-        lastSubmittedAt: d.last_submitted_date
-      };
-    },
-    (d) => {
-      let data = _.groupBy(d, i => i.code);
-      sel.addEventListener("change", () => {
-        buildTop10ChartForCampaign(data, sel.value, meta);
-      });
-      buildTop10ChartForCampaign(data, sel.value, meta);
-    });
-
-  loadDataFrom(
-    'daily.csv',
-    (d) => {
-      return {
-        'Submitted': +d.count,
-        'Date Added': d.date_added,
-        code: d.code,
-        description: d.description
-      };
-    },
-    (d) => {
-      sel.addEventListener("change", () => {
-        buildDailyChartForCampaign(d, sel.value, meta);
-      });
-      buildDailyChartForCampaign(d, sel.value, meta);
-    });
-
-  loadDataFrom(
-    'weekly.csv',
-    (d) => {
-      return {
-        'Submitted': +d.count,
-        'Week Added': d.week_added,
-        code: d.code,
-        description: d.description
-      };
-    },
-    (d) => {
-      sel.addEventListener("change", () => {
-        buildWeeklyChartForCampaign(d, sel.value, meta);
-      });
-      buildWeeklyChartForCampaign(d, sel.value, meta);
-    });
-});
 
 let buildSelections = function(meta) {
   d3.select('#campaign-choice')
@@ -109,6 +55,9 @@ let buildTop10ChartForCampaign = function (data, campaign, meta) {
         type: 'category'
       },
       y: {
+        tick: {
+          format: d3.format('d')
+        },
         label: {
           text: 'articles',
           position: 'outer-middle'
@@ -183,6 +132,9 @@ let buildDailyChartForCampaign = function (data, campaign, meta) {
       },
       y: {
         min: 0,
+        tick: {
+          format: d3.format('d')
+        },
         padding: {
           bottom: 0
         }
@@ -231,3 +183,72 @@ let buildWeeklyChartForCampaign = function (data, campaign, meta) {
   });
   return chart;
 };
+
+loadDataFrom('meta.csv', (d) => {
+  return {
+    userCount: d.user_count,
+    articleCount: d.article_count,
+    editathonCode: d.editathon_code,
+    editathonDescription: d.editathon_description,
+    url: d.url
+  };
+}, (meta) => {
+  buildSelections(meta);
+  let sel = document.getElementById('campaign-choice');
+  sel.value = 'asian-month-2017-en';
+  meta = _.keyBy(meta, i => i.editathonCode);
+
+  loadDataFrom(
+    '10-top.csv',
+    (d) => {
+      return {
+        rank: +d.rank_number,
+        username: d.user,
+        'Submitted': +d.article_count,
+        code: d.code,
+        description: d.description,
+        lastSubmittedAt: d.last_submitted_date
+      };
+    },
+    (d) => {
+      let data = _.groupBy(d, i => i.code);
+      sel.addEventListener("change", () => {
+        buildTop10ChartForCampaign(data, sel.value, meta);
+      });
+      buildTop10ChartForCampaign(data, sel.value, meta);
+    });
+
+  loadDataFrom(
+    'daily.csv',
+    (d) => {
+      return {
+        'Submitted': +d.count,
+        'Date Added': d.date_added,
+        code: d.code,
+        description: d.description
+      };
+    },
+    (d) => {
+      sel.addEventListener("change", () => {
+        buildDailyChartForCampaign(d, sel.value, meta);
+      });
+      buildDailyChartForCampaign(d, sel.value, meta);
+    });
+
+  loadDataFrom(
+    'weekly.csv',
+    (d) => {
+      return {
+        'Submitted': +d.count,
+        'Week Added': d.week_added,
+        code: d.code,
+        description: d.description
+      };
+    },
+    (d) => {
+      sel.addEventListener("change", () => {
+        buildWeeklyChartForCampaign(d, sel.value, meta);
+      });
+      buildWeeklyChartForCampaign(d, sel.value, meta);
+    });
+});
