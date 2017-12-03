@@ -6,6 +6,18 @@
     fill: #ff9966;
 }
 
+#campaign-choice {
+    height: 100%;
+}
+
+#main {
+    margin-top: 80px;
+}
+
+.chart .bb-title {
+    font-size: 2em;
+}
+
 /*! HTML5 Boilerplate v6.0.1 | MIT License | https://html5boilerplate.com/ */
 
 /*
