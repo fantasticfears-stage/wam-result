@@ -31,6 +31,7 @@ let buildSelections = function(meta) {
     .enter()
     .append("option")
     .attr('value', d => d.editathonCode)
+    .attr('class', 'dropdown-item')
     .text(d => d.editathonDescription);
 }
 
